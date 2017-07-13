@@ -24,8 +24,6 @@ class CrimePagerActivity: AppCompatActivity() {
         setContentView(R.layout.activity_crime_pager)
         crimes = CrimeLab.get(this)?.crimes
 
-        val crimeID = intent.getSerializableExtra(EXTRA_CRIME_ID) as UUID
-
         crime_view_pager.adapter = (object : FragmentStatePagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {
                 val crime = crimes?.get(position)
@@ -41,5 +39,17 @@ class CrimePagerActivity: AppCompatActivity() {
             }
         })
 
+        val crimeID = intent.getSerializableExtra(EXTRA_CRIME_ID) as UUID
+        for (i in 0..crimes?.size!! - (1)) {
+            if (crimes?.get(i)?.id == (crimeID)) {
+                crime_view_pager.currentItem = i
+                break
+            }
+        }
+
+        goToFirstButton.setOnClickListener {v -> crime_view_pager.currentItem = 0}
+        goToLastButton.setOnClickListener {v -> crime_view_pager.currentItem = crimes?.size!! - 1}
+
     }
+
 }
