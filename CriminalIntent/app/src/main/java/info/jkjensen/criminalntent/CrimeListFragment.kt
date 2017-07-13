@@ -7,12 +7,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import kotlinx.android.synthetic.main.fragment_crime_list.*
 import org.jetbrains.anko.support.v4.startActivity
-import java.util.*
 
 /**
  * Created by jk on 6/15/17.
@@ -86,7 +84,7 @@ class CrimeListFragment: Fragment() {
         override fun onClick(v: View?) {
 //            toast(crime?.title + " clicked!")
             selectedItem = adapterPosition
-            startActivity<CrimeActivity>(CrimeActivity.EXTRA_CRIME_ID to (crime?.id ?: 0))
+            startActivity<CrimePagerActivity>(CrimePagerActivity.EXTRA_CRIME_ID to (crime?.id ?: 0))
         }
 
 
