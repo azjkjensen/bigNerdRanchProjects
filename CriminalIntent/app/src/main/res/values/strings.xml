@@ -7,4 +7,5 @@
     <string name="crime_solved_label">Solved</string>
     <string name="pager_go_to_first">go to first</string>
     <string name="pager_go_to_last">go to last</string>
+    <string name="date_picker_title">Date of crime:</string>
 </resources>

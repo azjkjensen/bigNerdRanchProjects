@@ -10,7 +10,7 @@ import java.util.UUID
 data class Crime(
         val id: UUID,
         var title: String,
-        val date: Date,
+        var date: Date,
         var solved: Boolean){
     constructor(): this(UUID.randomUUID(), String(), Date(), false)
 }

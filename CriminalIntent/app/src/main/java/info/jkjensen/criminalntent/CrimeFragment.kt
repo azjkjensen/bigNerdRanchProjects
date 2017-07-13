@@ -1,7 +1,10 @@
 package info.jkjensen.criminalntent
 
+import android.app.Activity
+import android.content.Intent
 import android.support.v4.app.Fragment
 import android.os.Bundle
+import android.support.v4.app.FragmentManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -20,8 +23,11 @@ class CrimeFragment : Fragment() {
 
     companion object {
         private val ARG_CRIME_ID = "crime_id"
+        private val DIALOG_DATE = "DialogDate"
+        private val REQUEST_DATE = 0
+
         public fun newInstance(crimeID: UUID):CrimeFragment{
-            var args: Bundle = Bundle()
+            val args: Bundle = Bundle()
             args.putSerializable(ARG_CRIME_ID, crimeID)
             val fragment = CrimeFragment()
             fragment.arguments = args
@@ -49,8 +55,7 @@ class CrimeFragment : Fragment() {
 
         crimeTitleEditText.setText(crime?.title)
         crimeSolvedCheckbox.isChecked = crime?.solved ?: false
-        crimeDateButton.text = DateFormat.getDateInstance().format(crime?.date)
-        crimeDateButton.isEnabled = false
+        updateDate()
 
         crimeSolvedCheckbox.setOnCheckedChangeListener{ buttonView, isChecked ->
             crime?.solved = true
@@ -70,5 +75,25 @@ class CrimeFragment : Fragment() {
 //                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         })
+
+        crimeDateButton.setOnClickListener {
+            val dialog: DatePickerFragment = DatePickerFragment.newInstance(crime?.date)
+            dialog.setTargetFragment(this, REQUEST_DATE);
+            dialog.show(fragmentManager, DIALOG_DATE)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(resultCode != Activity.RESULT_OK){
+            return
+        }
+        if(requestCode == REQUEST_DATE){
+            crime?.date = data?.getSerializableExtra(DatePickerFragment.EXTRA_DATE) as Date
+            updateDate()
+        }
+    }
+
+    private fun updateDate() {
+        crimeDateButton.text = DateFormat.getDateInstance().format(crime?.date)
     }
 }
