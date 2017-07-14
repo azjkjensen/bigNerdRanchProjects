@@ -45,7 +45,8 @@
         android:text="@string/crime_details_label"
         style="?android:listSeparatorTextViewStyle"
         app:layout_constraintHorizontal_bias="0.026"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0"
+        android:id="@+id/textView3" />
 
     <Button
         android:id="@+id/crimeDateButton"
@@ -66,5 +67,17 @@
         app:layout_constraintHorizontal_bias="0.027"
         android:layout_marginTop="12dp"
         app:layout_constraintTop_toBottomOf="@+id/crimeDateButton" />
+
+    <Button
+        android:id="@+id/deleteCrimeButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="52dp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/delete_crime" />
 
 </android.support.constraint.ConstraintLayout>

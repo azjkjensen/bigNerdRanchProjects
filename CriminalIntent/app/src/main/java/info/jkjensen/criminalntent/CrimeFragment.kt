@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_crime.*
+import org.jetbrains.anko.support.v4.act
 import java.text.DateFormat
 import java.util.*
 
@@ -37,10 +38,8 @@ class CrimeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
-//        val crimeID: UUID = this.activity.intent.getSerializableExtra(CrimeActivity.EXTRA_CRIME_ID) as UUID
         val crimeID = arguments.getSerializable(ARG_CRIME_ID) as UUID
         crime = CrimeLab.get(this.activity)?.getCrimeByID(crimeID)
-//        crime = Crime()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -80,6 +79,11 @@ class CrimeFragment : Fragment() {
             val dialog: DatePickerFragment = DatePickerFragment.newInstance(crime?.date)
             dialog.setTargetFragment(this, REQUEST_DATE);
             dialog.show(fragmentManager, DIALOG_DATE)
+        }
+
+        deleteCrimeButton.setOnClickListener {
+            CrimeLab.get(activity)?.removeCrimeById(crime?.id)
+            activity.finish()
         }
     }
 

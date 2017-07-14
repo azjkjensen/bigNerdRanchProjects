@@ -21,12 +21,12 @@ class CrimeLab private constructor(context: Context) {
     public var crimes: MutableList<Crime> = mutableListOf()
 
     init {
-        for (i in 0..100) {
-            var crime: Crime = Crime()
-            crime.title = "Crime #" + i
-            crime.solved = i%2 == 0
-            crimes.add(crime)
-        }
+//        for (i in 0..100) {
+//            var crime: Crime = Crime()
+//            crime.title = "Crime #" + i
+//            crime.solved = i%2 == 0
+//            crimes.add(crime)
+//        }
     }
 
     fun getCrimeByID(id: UUID): Crime?{
@@ -36,5 +36,22 @@ class CrimeLab private constructor(context: Context) {
             }
         }
         return null
+    }
+
+    fun addCrime(c:Crime){
+        crimes.add(c)
+    }
+
+    fun removeCrimeById(id: UUID?) {
+        var indexToRemove:Int? = null
+        for((index, crime: Crime) in crimes.withIndex()){
+            if(crime.id.equals(id)){
+                indexToRemove = index
+                break
+            }
+        }
+        if(indexToRemove != null) {
+            crimes.removeAt(indexToRemove)
+        }
     }
 }
