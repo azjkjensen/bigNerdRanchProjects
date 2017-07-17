@@ -8,9 +8,7 @@ import android.support.v4.app.FragmentManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import kotlinx.android.synthetic.main.fragment_crime.*
 import org.jetbrains.anko.support.v4.act
 import java.text.DateFormat
@@ -40,6 +38,7 @@ class CrimeFragment : Fragment() {
         super.onCreate(savedInstanceState)
         val crimeID = arguments.getSerializable(ARG_CRIME_ID) as UUID
         crime = CrimeLab.get(this.activity)?.getCrimeByID(crimeID)
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -56,8 +55,9 @@ class CrimeFragment : Fragment() {
         crimeSolvedCheckbox.isChecked = crime?.solved ?: false
         updateDate()
 
-        crimeSolvedCheckbox.setOnCheckedChangeListener{ buttonView, isChecked ->
-            crime?.solved = true
+        crimeSolvedCheckbox.setOnCheckedChangeListener{ _, isChecked ->
+            crime?.solved = isChecked
+            CrimeLab.get(activity.baseContext)?.updateCrime(crime!!)
         }
 
         crimeTitleEditText.addTextChangedListener(object: TextWatcher{
@@ -67,7 +67,8 @@ class CrimeFragment : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 Log.i("CrimeFragment", "Text changed!")
-                crime?.title = s.toString()
+                crime!!.title = s.toString()
+                CrimeLab.get(activity.baseContext)?.updateCrime(crime!!)
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -82,8 +83,22 @@ class CrimeFragment : Fragment() {
         }
 
         deleteCrimeButton.setOnClickListener {
-            CrimeLab.get(activity)?.removeCrimeById(crime?.id)
-            activity.finish()
+            deleteCrime()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater?.inflate(R.menu.menu_detail, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when(item?.itemId){
+            R.id.delete_crime -> {
+                deleteCrime()
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
         }
     }
 
@@ -92,12 +107,18 @@ class CrimeFragment : Fragment() {
             return
         }
         if(requestCode == REQUEST_DATE){
-            crime?.date = data?.getSerializableExtra(DatePickerFragment.EXTRA_DATE) as Date
+            crime!!.date = data?.getSerializableExtra(DatePickerFragment.EXTRA_DATE) as Date
+            CrimeLab.get(activity.baseContext)?.updateCrime(crime!!)
             updateDate()
         }
     }
 
     private fun updateDate() {
         crimeDateButton.text = DateFormat.getDateInstance().format(crime?.date)
+    }
+
+    private fun deleteCrime(){
+        CrimeLab.get(activity)?.removeCrimeById(crime?.id)
+        activity.finish()
     }
 }

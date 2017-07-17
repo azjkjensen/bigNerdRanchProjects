@@ -92,8 +92,10 @@ class CrimeListFragment: Fragment() {
         val crimes = crimeLab?.getCrimes()
 
         if(crimes?.size == 0){
+            crimeRecyclerView.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
             noContentTextView.visibility = View.VISIBLE
         } else{
+            crimeRecyclerView.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
             noContentTextView.visibility = View.GONE
         }
 
@@ -101,6 +103,7 @@ class CrimeListFragment: Fragment() {
             adapter = CrimeAdapter(crimes)
             crimeRecyclerView.adapter = adapter
         } else {
+            adapter!!.crimes = crimes
             adapter?.notifyDataSetChanged()
 //            if(selectedItem !== null){
 //                adapter?.notifyItemChanged(selectedItem as Int)

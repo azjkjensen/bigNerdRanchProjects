@@ -13,6 +13,7 @@ import java.util.*
 class CrimeLab private constructor(context: Context) {
     companion object{
         var crimeLab: CrimeLab? = null
+        val rowParser = CrimeRowParser()
         public fun get(context: Context? = null):CrimeLab?{
             if(crimeLab == null && context != null){
                 crimeLab = CrimeLab(context)
@@ -31,21 +32,14 @@ class CrimeLab private constructor(context: Context) {
         }
     }
 
-    class CrimeRowParser : RowParser<Crime> {
-        override fun parseRow(columns: Array<Any?>): Crime {
-            return Crime(UUID.fromString(columns[0] as String), columns[1] as String, Date(columns[2] as String), columns[3] as Boolean)
-        }
-    }
-
     fun getCrimes():List<Crime>?{
-//        return context!!.database.use {
-//            select("crime")
-//                    .exec {
-//                        parseList(CrimeRowParser()
-//                        )
-//                    }
-//        }
-        return listOf()
+        return context!!.database.use {
+            select("crime")
+                    .exec {
+                        parseList(rowParser)
+                    }
+        }
+//        return listOf()
     }
 
     fun getCrimeByID(id: UUID): Crime?{
@@ -53,7 +47,7 @@ class CrimeLab private constructor(context: Context) {
             select("crime")
                     .whereArgs("UUID = {id}", "id" to id.toString())
                     .exec {
-                        parseSingle(CrimeRowParser())
+                        parseSingle(rowParser)
                     }
         }
     }
@@ -89,6 +83,18 @@ class CrimeLab private constructor(context: Context) {
             context!!.database.use {
                 delete("crime", "UUID = ?", arrayOf(id.toString()))
             }
+        }
+    }
+
+    class CrimeRowParser : RowParser<Crime> {
+        override fun parseRow(columns: Array<Any?>): Crime {
+//            return Crime((columns[0].toString().toInt()), UUID.fromString(columns[1].toString()), columns[2].toString(), Date(columns[3].toString()), columns[4] as Boolean)
+            return Crime((columns[0].toString().toInt()),
+                    UUID.fromString(columns[1].toString()),
+                    columns[2].toString(),
+                    Date(columns[3].toString().toLong()),
+                    columns[4].toString().toInt() == 1)
+
         }
     }
 }
