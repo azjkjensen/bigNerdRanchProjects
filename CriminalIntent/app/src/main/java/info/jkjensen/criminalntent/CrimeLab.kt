@@ -26,10 +26,6 @@ class CrimeLab private constructor(context: Context) {
 
     init {
         this.context = context
-        context.database.use{
-            select("crime")
-                    .whereArgs("(title = {title}", "title" to "s")
-        }
     }
 
     fun getCrimes():List<Crime>?{
@@ -56,11 +52,7 @@ class CrimeLab private constructor(context: Context) {
 
         context!!.database.use {
             insert("crime",
-//                    "_id" to 1,
-                    "UUID" to c.id.toString(),
-                    "title" to c.title,
-                    "date" to c.date.time,
-                    "solved" to if(c.solved) 1 else 0
+                    *(getCrimeMap(c))
                     )
         }
     }
@@ -68,10 +60,7 @@ class CrimeLab private constructor(context: Context) {
     fun updateCrime(c: Crime){
         context!!.database.use {
             update("crime",
-                    "UUID" to c.id.toString(),
-                    "title" to c.title,
-                    "date" to c.date.time,
-                    "solved" to if(c.solved) 1 else 0
+                    *(getCrimeMap(c))
                     )
                     .whereSimple("UUID = ?", c.id.toString())
                     .exec()
@@ -86,14 +75,23 @@ class CrimeLab private constructor(context: Context) {
         }
     }
 
+    private fun getCrimeMap(c:Crime): Array<Pair<String, Any>> {
+        return arrayOf(
+            "UUID" to c.id.toString(),
+            "title" to c.title,
+            "suspect" to c.suspect,
+            "date" to c.date.time,
+            "solved" to if(c.solved) 1 else 0)
+    }
+
     class CrimeRowParser : RowParser<Crime> {
         override fun parseRow(columns: Array<Any?>): Crime {
-//            return Crime((columns[0].toString().toInt()), UUID.fromString(columns[1].toString()), columns[2].toString(), Date(columns[3].toString()), columns[4] as Boolean)
             return Crime((columns[0].toString().toInt()),
                     UUID.fromString(columns[1].toString()),
                     columns[2].toString(),
-                    Date(columns[3].toString().toLong()),
-                    columns[4].toString().toInt() == 1)
+                    columns[3].toString(),
+                    Date(columns[4].toString().toLong()),
+                    columns[5].toString().toInt() == 1)
 
         }
     }

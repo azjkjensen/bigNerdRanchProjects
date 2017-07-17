@@ -11,7 +11,8 @@ import android.util.Log
 import android.view.*
 import kotlinx.android.synthetic.main.fragment_crime.*
 import org.jetbrains.anko.support.v4.act
-import java.text.DateFormat
+import android.text.format.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -114,11 +115,34 @@ class CrimeFragment : Fragment() {
     }
 
     private fun updateDate() {
-        crimeDateButton.text = DateFormat.getDateInstance().format(crime?.date)
+        crimeDateButton.text = SimpleDateFormat("dd MMM").format(crime?.date)
     }
 
     private fun deleteCrime(){
         CrimeLab.get(activity)?.removeCrimeById(crime?.id)
         activity.finish()
+    }
+
+    private fun getCrimeReport(): String? {
+        var solvedString: String
+        if(crime!!.solved){
+            solvedString = getString(R.string.crime_report_solved)
+        } else{
+            solvedString = getString(R.string.crime_report_unsolved)
+        }
+
+        val dateFormat = "EEE, MMM dd"
+        val dateString = DateFormat.format(dateFormat, crime!!.date)
+
+        var suspect = crime?.suspect
+        if(suspect == null){
+            suspect = getString(R.string.crime_report_no_suspect)
+        } else {
+            suspect = getString(R.string.crime_report_suspect, suspect)
+        }
+
+        val report = getString(R.string.crime_report, crime!!.title, dateString, solvedString, suspect)
+
+        return report
     }
 }

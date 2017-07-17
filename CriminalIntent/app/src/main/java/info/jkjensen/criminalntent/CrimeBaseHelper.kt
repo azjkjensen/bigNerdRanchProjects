@@ -27,6 +27,7 @@ class CrimeBaseHelper(context: Context): ManagedSQLiteOpenHelper(context, "crime
                 "_id" to SqlType.create("INTEGER PRIMARY KEY AUTOINCREMENT"),
                 "UUID" to TEXT,
                 "title" to TEXT,
+                "suspect" to TEXT,
                 "date" to TEXT,
                 "solved" to TEXT)
     }

@@ -11,8 +11,9 @@ data class Crime(
         var _id: Int?,
         val id: UUID,
         var title: String,
+        var suspect: String,
         var date: Date,
         var solved: Boolean){
 //    constructor(id, title, date, solved)
-    constructor(): this(null, UUID.randomUUID(), String(), Date(), false)
+    constructor(): this(null, UUID.randomUUID(), String(), String(), Date(), false)
 }
