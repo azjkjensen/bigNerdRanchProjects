@@ -17,12 +17,12 @@ class CrimePagerActivity: AppCompatActivity() {
         val EXTRA_CRIME_ID: String = "criminalintent_crime_id"
     }
 
-    private var crimes: MutableList<Crime>? = null
+    private var crimes: List<Crime>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_crime_pager)
-        crimes = CrimeLab.get(this)?.crimes
+        crimes = CrimeLab.get(this)?.getCrimes()
 
         crime_view_pager.adapter = (object : FragmentStatePagerAdapter(supportFragmentManager) {
             override fun getItem(position: Int): Fragment {

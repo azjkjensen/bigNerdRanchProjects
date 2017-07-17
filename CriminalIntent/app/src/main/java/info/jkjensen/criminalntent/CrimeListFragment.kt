@@ -69,7 +69,6 @@ class CrimeListFragment: Fragment() {
             R.id.new_crime -> {
                 val crime = Crime()
                 CrimeLab.get(activity)?.addCrime(crime)
-                selectedItem = CrimeLab.get(activity)?.crimes?.size?.minus(1)
                 startActivity<CrimePagerActivity>(CrimePagerActivity.EXTRA_CRIME_ID to crime.id)
                 return true
             }
@@ -90,7 +89,7 @@ class CrimeListFragment: Fragment() {
 
     private fun updateUI(){
         val crimeLab: CrimeLab? = CrimeLab.get(activity)
-        val crimes = crimeLab?.crimes
+        val crimes = crimeLab?.getCrimes()
 
         if(crimes?.size == 0){
             noContentTextView.visibility = View.VISIBLE
@@ -112,7 +111,7 @@ class CrimeListFragment: Fragment() {
 
     private fun updateSubtitle(){
         val crimeLab = CrimeLab.get(activity)
-        val crimeCount = crimeLab?.crimes?.size
+        val crimeCount = crimeLab?.getCrimes()?.size
         var subtitle = resources.getQuantityString(R.plurals.subtitle_plural, crimeCount ?: 0)
 
         if(!subtitleVisible){
@@ -124,7 +123,7 @@ class CrimeListFragment: Fragment() {
 
     }
 
-    inner class CrimeAdapter(var crimes: MutableList<Crime>?): RecyclerView.Adapter<CrimeHolder>() {
+    inner class CrimeAdapter(var crimes: List<Crime>?): RecyclerView.Adapter<CrimeHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): CrimeHolder {
             val layoutInflater: LayoutInflater = LayoutInflater.from(activity)
             val view: View = layoutInflater.inflate(R.layout.list_item_crime, parent, false)

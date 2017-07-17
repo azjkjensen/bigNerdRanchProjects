@@ -1,11 +1,14 @@
 package info.jkjensen.criminalntent
 
 import android.content.Context
+import android.util.Log
+import org.jetbrains.anko.db.*
 import java.util.*
 
 /**
  * Created by jk on 6/12/17.
  */
+
 
 class CrimeLab private constructor(context: Context) {
     companion object{
@@ -18,40 +21,74 @@ class CrimeLab private constructor(context: Context) {
         }
     }
 
-    public var crimes: MutableList<Crime> = mutableListOf()
+    private var context:Context? = null
 
     init {
-//        for (i in 0..100) {
-//            var crime: Crime = Crime()
-//            crime.title = "Crime #" + i
-//            crime.solved = i%2 == 0
-//            crimes.add(crime)
+        this.context = context
+        context.database.use{
+            select("crime")
+                    .whereArgs("(title = {title}", "title" to "s")
+        }
+    }
+
+    class CrimeRowParser : RowParser<Crime> {
+        override fun parseRow(columns: Array<Any?>): Crime {
+            return Crime(UUID.fromString(columns[0] as String), columns[1] as String, Date(columns[2] as String), columns[3] as Boolean)
+        }
+    }
+
+    fun getCrimes():List<Crime>?{
+//        return context!!.database.use {
+//            select("crime")
+//                    .exec {
+//                        parseList(CrimeRowParser()
+//                        )
+//                    }
 //        }
+        return listOf()
     }
 
     fun getCrimeByID(id: UUID): Crime?{
-        for(crime: Crime in crimes){
-            if(crime.id.equals(id)){
-                return crime
-            }
+        return context!!.database.use {
+            select("crime")
+                    .whereArgs("UUID = {id}", "id" to id.toString())
+                    .exec {
+                        parseSingle(CrimeRowParser())
+                    }
         }
-        return null
     }
 
     fun addCrime(c:Crime){
-        crimes.add(c)
+
+        context!!.database.use {
+            insert("crime",
+//                    "_id" to 1,
+                    "UUID" to c.id.toString(),
+                    "title" to c.title,
+                    "date" to c.date.time,
+                    "solved" to if(c.solved) 1 else 0
+                    )
+        }
+    }
+
+    fun updateCrime(c: Crime){
+        context!!.database.use {
+            update("crime",
+                    "UUID" to c.id.toString(),
+                    "title" to c.title,
+                    "date" to c.date.time,
+                    "solved" to if(c.solved) 1 else 0
+                    )
+                    .whereSimple("UUID = ?", c.id.toString())
+                    .exec()
+        }
     }
 
     fun removeCrimeById(id: UUID?) {
-        var indexToRemove:Int? = null
-        for((index, crime: Crime) in crimes.withIndex()){
-            if(crime.id.equals(id)){
-                indexToRemove = index
-                break
+        if(id != null) {
+            context!!.database.use {
+                delete("crime", "UUID = ?", arrayOf(id.toString()))
             }
-        }
-        if(indexToRemove != null) {
-            crimes.removeAt(indexToRemove)
         }
     }
 }

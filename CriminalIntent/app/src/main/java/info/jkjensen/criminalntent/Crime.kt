@@ -12,5 +12,6 @@ data class Crime(
         var title: String,
         var date: Date,
         var solved: Boolean){
+//    constructor(id, title, date, solved)
     constructor(): this(UUID.randomUUID(), String(), Date(), false)
 }
