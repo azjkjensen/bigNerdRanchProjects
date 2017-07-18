@@ -2,6 +2,7 @@ package info.jkjensen.criminalntent
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.support.v4.app.Fragment
 import android.os.Bundle
 import android.support.v4.app.FragmentManager
@@ -14,6 +15,11 @@ import org.jetbrains.anko.support.v4.act
 import android.text.format.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import android.provider.ContactsContract
+import java.net.URI
+import android.content.pm.PackageManager
+import android.support.v4.app.ShareCompat
+
 
 /**
  * A placeholder fragment containing a simple view.
@@ -25,6 +31,7 @@ class CrimeFragment : Fragment() {
         private val ARG_CRIME_ID = "crime_id"
         private val DIALOG_DATE = "DialogDate"
         private val REQUEST_DATE = 0
+        private val REQUEST_CONTACT = 1
 
         public fun newInstance(crimeID: UUID):CrimeFragment{
             val args: Bundle = Bundle()
@@ -52,6 +59,7 @@ class CrimeFragment : Fragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         crimeTitleEditText.setText(crime?.title)
         crimeSolvedCheckbox.isChecked = crime?.solved ?: false
         updateDate()
@@ -62,9 +70,7 @@ class CrimeFragment : Fragment() {
         }
 
         crimeTitleEditText.addTextChangedListener(object: TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-//                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 Log.i("CrimeFragment", "Text changed!")
@@ -72,9 +78,7 @@ class CrimeFragment : Fragment() {
                 CrimeLab.get(activity.baseContext)?.updateCrime(crime!!)
             }
 
-            override fun afterTextChanged(s: Editable?) {
-//                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
+            override fun afterTextChanged(s: Editable?) {}
         })
 
         crimeDateButton.setOnClickListener {
@@ -85,6 +89,33 @@ class CrimeFragment : Fragment() {
 
         deleteCrimeButton.setOnClickListener {
             deleteCrime()
+        }
+
+        crimeReportButton.setOnClickListener {
+            val i = ShareCompat.IntentBuilder
+                    .from(activity)
+                    .setType("text/plain")
+                    .setText(getCrimeReport())
+                    .setSubject(getString(R.string.crime_report_subject))
+                    .setChooserTitle(getString(R.string.send_report))
+                    .createChooserIntent()
+            startActivity(i)
+        }
+
+        val pickContact = Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI)
+
+
+        val packageManager = activity.packageManager
+        if (packageManager.resolveActivity(pickContact, PackageManager.MATCH_DEFAULT_ONLY) == null) {
+            crimeSuspectButton.isEnabled = false
+        }else {
+            crimeSuspectButton.setOnClickListener {
+                startActivityForResult(pickContact, REQUEST_CONTACT)
+            }
+        }
+
+        if(crime?.suspect != null && crime?.suspect != ""){
+            crimeSuspectButton.text = crime?.suspect
         }
     }
 
@@ -107,10 +138,37 @@ class CrimeFragment : Fragment() {
         if(resultCode != Activity.RESULT_OK){
             return
         }
-        if(requestCode == REQUEST_DATE){
-            crime!!.date = data?.getSerializableExtra(DatePickerFragment.EXTRA_DATE) as Date
-            CrimeLab.get(activity.baseContext)?.updateCrime(crime!!)
-            updateDate()
+        when(requestCode) {
+            REQUEST_DATE -> {
+                crime!!.date = data?.getSerializableExtra(DatePickerFragment.EXTRA_DATE) as Date
+                CrimeLab.get(activity.baseContext)?.updateCrime(crime!!)
+                updateDate()
+            }
+            REQUEST_CONTACT -> {
+                if(data != null){
+                    val contactUri: Uri? = data.getData()
+                    val queryFields: Array<String> = arrayOf(ContactsContract.Contacts.DISPLAY_NAME)
+
+                    val c = activity.contentResolver.query(contactUri, queryFields, null, null, null)
+
+                    try{
+                        // Double-check that you actually got results
+                        if (c.count == 0) {
+                            return
+                        }
+
+                        // Pull out the first column of the first row of data -
+                        // that is your suspect's name
+                        c.moveToFirst()
+                        val suspect:String = c.getString(0)
+                        crime?.suspect = suspect
+                        crimeSuspectButton.text = suspect
+                        CrimeLab.get(activity.baseContext)?.updateCrime(crime!!)
+                    } finally {
+                        c.close()
+                    }
+                }
+            }
         }
     }
 
