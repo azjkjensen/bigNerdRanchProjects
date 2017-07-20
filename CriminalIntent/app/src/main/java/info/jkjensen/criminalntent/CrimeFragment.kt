@@ -33,9 +33,11 @@ class CrimeFragment : Fragment() {
     companion object {
         private val ARG_CRIME_ID = "crime_id"
         private val DIALOG_DATE = "DialogDate"
+        private val DIALOG_DETAIL = "DialogDetail"
         private val REQUEST_DATE = 0
         private val REQUEST_CONTACT = 1
         private val REQUEST_PHOTO = 2
+        private val REQUEST_DETAIL = 3
 
         public fun newInstance(crimeID: UUID):CrimeFragment{
             val args: Bundle = Bundle()
@@ -90,7 +92,7 @@ class CrimeFragment : Fragment() {
 
         crimeDateButton.setOnClickListener {
             val dialog: DatePickerFragment = DatePickerFragment.newInstance(crime?.date)
-            dialog.setTargetFragment(this, REQUEST_DATE);
+            dialog.setTargetFragment(this, REQUEST_DATE)
             dialog.show(fragmentManager, DIALOG_DATE)
         }
 
@@ -144,6 +146,15 @@ class CrimeFragment : Fragment() {
 
             startActivityForResult(captureImage, REQUEST_PHOTO)
         }
+
+        if(crimeCameraButton.isEnabled) {
+            crimePhoto.setOnClickListener {
+                val imageDetailDialog: ImageDetailFragment = ImageDetailFragment.newInstance(photoFile!!.path)
+                imageDetailDialog.setTargetFragment(this, REQUEST_DATE)
+                imageDetailDialog.show(fragmentManager, DIALOG_DETAIL)
+            }
+        }
+
         updatePhotoView()
     }
 
