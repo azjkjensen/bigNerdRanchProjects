@@ -3,6 +3,7 @@ package info.jkjensen.criminalntent
 import android.content.Context
 import android.util.Log
 import org.jetbrains.anko.db.*
+import java.io.File
 import java.util.*
 
 /**
@@ -73,6 +74,11 @@ class CrimeLab private constructor(context: Context) {
                 delete("crime", "UUID = ?", arrayOf(id.toString()))
             }
         }
+    }
+
+    fun getPhotoFile(c:Crime?): File {
+        val fileDir: File = context!!.filesDir
+        return File(fileDir, c?.photoFilename)
     }
 
     private fun getCrimeMap(c:Crime): Array<Pair<String, Any>> {

@@ -16,4 +16,10 @@ data class Crime(
         var solved: Boolean){
 //    constructor(id, title, date, solved)
     constructor(): this(null, UUID.randomUUID(), String(), String(), Date(), false)
+
+    val photoFilename:String
+    get() = "IMG_" + id.toString() + ".jpg"
+//    fun getPhotoFilename():String{
+//        return "IMG_" + id.toString() + ".jpg"
+//    }
 }

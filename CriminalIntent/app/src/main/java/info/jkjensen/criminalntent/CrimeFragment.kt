@@ -5,20 +5,23 @@ import android.content.Intent
 import android.net.Uri
 import android.support.v4.app.Fragment
 import android.os.Bundle
-import android.support.v4.app.FragmentManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import kotlinx.android.synthetic.main.fragment_crime.*
-import org.jetbrains.anko.support.v4.act
 import android.text.format.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import android.provider.ContactsContract
-import java.net.URI
 import android.content.pm.PackageManager
+import android.provider.MediaStore
 import android.support.v4.app.ShareCompat
+import android.support.v4.content.FileProvider
+import java.io.File
+import android.content.pm.ResolveInfo
+
+
 
 
 /**
@@ -32,6 +35,7 @@ class CrimeFragment : Fragment() {
         private val DIALOG_DATE = "DialogDate"
         private val REQUEST_DATE = 0
         private val REQUEST_CONTACT = 1
+        private val REQUEST_PHOTO = 2
 
         public fun newInstance(crimeID: UUID):CrimeFragment{
             val args: Bundle = Bundle()
@@ -42,11 +46,14 @@ class CrimeFragment : Fragment() {
         }
     }
 
+    private var photoFile: File? = null
+
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         val crimeID = arguments.getSerializable(ARG_CRIME_ID) as UUID
         crime = CrimeLab.get(this.activity)?.getCrimeByID(crimeID)
         setHasOptionsMenu(true)
+        photoFile = CrimeLab.get(this.activity)?.getPhotoFile(crime)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -116,6 +123,26 @@ class CrimeFragment : Fragment() {
 
         if(crime?.suspect != null && crime?.suspect != ""){
             crimeSuspectButton.text = crime?.suspect
+        }
+
+        val captureImage: Intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val canTakePhoto = photoFile != null && captureImage.resolveActivity(packageManager) != null
+        crimeCameraButton.isEnabled = canTakePhoto
+        crimeCameraButton.setOnClickListener{
+            val uri:Uri = FileProvider.getUriForFile(activity,
+                    "info.jkjensen.criminalintent.fileprovider",
+                    photoFile)
+            captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+            val cameraActivities: List<ResolveInfo> = activity
+                    .packageManager.queryIntentActivities(captureImage,
+                    PackageManager.MATCH_DEFAULT_ONLY)
+
+            for (activity in cameraActivities) {
+                getActivity().grantUriPermission(activity.activityInfo.packageName,
+                        uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            }
+
+            startActivityForResult(captureImage, REQUEST_PHOTO)
         }
     }
 
