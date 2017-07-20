@@ -1,7 +1,7 @@
 package info.jkjensen.criminalntent
 
 import android.content.Context
-import android.util.Log
+import info.jkjensen.criminalntent.db.database
 import org.jetbrains.anko.db.*
 import java.io.File
 import java.util.*

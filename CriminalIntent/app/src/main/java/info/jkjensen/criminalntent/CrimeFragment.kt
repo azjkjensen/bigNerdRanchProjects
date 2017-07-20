@@ -20,8 +20,8 @@ import android.support.v4.app.ShareCompat
 import android.support.v4.content.FileProvider
 import java.io.File
 import android.content.pm.ResolveInfo
-
-
+import android.graphics.Bitmap
+import info.jkjensen.criminalntent.utils.getScaledBitmap
 
 
 /**
@@ -144,6 +144,7 @@ class CrimeFragment : Fragment() {
 
             startActivityForResult(captureImage, REQUEST_PHOTO)
         }
+        updatePhotoView()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -196,6 +197,11 @@ class CrimeFragment : Fragment() {
                     }
                 }
             }
+            REQUEST_PHOTO ->{
+                val uri:Uri = FileProvider.getUriForFile(activity, "info.jkjensen.criminalintent.fileprovider", photoFile)
+                activity.revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                updatePhotoView()
+            }
         }
     }
 
@@ -229,5 +235,14 @@ class CrimeFragment : Fragment() {
         val report = getString(R.string.crime_report, crime!!.title, dateString, solvedString, suspect)
 
         return report
+    }
+
+    private fun updatePhotoView(){
+        if(photoFile == null || !photoFile!!.exists()){
+            crimePhoto.setImageDrawable(null)
+        } else{
+            val bm:Bitmap? = getScaledBitmap(photoFile!!.path, activity)
+            crimePhoto.setImageBitmap(bm)
+        }
     }
 }

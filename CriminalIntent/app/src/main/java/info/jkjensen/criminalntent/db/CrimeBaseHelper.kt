@@ -1,4 +1,4 @@
-package info.jkjensen.criminalntent
+package info.jkjensen.criminalntent.db
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -14,7 +14,7 @@ class CrimeBaseHelper(context: Context): ManagedSQLiteOpenHelper(context, "crime
         private var instance: CrimeBaseHelper? = null
 
         @Synchronized
-        fun getInstance(context:Context):CrimeBaseHelper{
+        fun getInstance(context:Context): CrimeBaseHelper {
             if(instance == null){
                 instance = CrimeBaseHelper(context.applicationContext)
             }
