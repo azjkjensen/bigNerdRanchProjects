@@ -45,7 +45,7 @@ class ImageDetailFragment: DialogFragment() {
 
         val bm: Bitmap? = getScaledBitmap(path, activity)
         val imageView = v.findViewById(R.id.detailImageView) as ImageView
-        imageView.layoutParams.height =  (bm!!.height + bm!!.height) ?: imageView.layoutParams.height
+        imageView.layoutParams.height =  (bm!!.height + bm!!.height)
         imageView.requestLayout()
         imageView.setImageBitmap(bm)
 

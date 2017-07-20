@@ -10,4 +10,8 @@ class CrimeListActivity : SingleFragmentActivity(){
     override fun createFragment(): Fragment {
         return CrimeListFragment()
     }
+
+    override fun getLayoutResId(): Int {
+        return R.layout.activity_twopane
+    }
 }
