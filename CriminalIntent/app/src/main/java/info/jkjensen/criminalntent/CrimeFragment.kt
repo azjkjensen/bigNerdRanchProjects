@@ -254,7 +254,6 @@ class CrimeFragment : Fragment() {
         } else{
             val bm:Bitmap? = getScaledBitmap(photoFile!!.path, activity)
             crimePhoto.setImageBitmap(bm)
-//            crimePhoto.invalidate()
         }
     }
 }
