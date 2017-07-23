@@ -12,7 +12,7 @@ import org.jetbrains.anko.support.v4.startActivity
  * Created by jk on 6/15/17.
  */
 
-class CrimeListActivity : SingleFragmentActivity(), CrimeListFragment.Callbacks{
+class CrimeListActivity : SingleFragmentActivity(), CrimeListFragment.Callbacks, CrimeFragment.Callbacks{
 
     override fun createFragment(): Fragment {
         return CrimeListFragment()
@@ -34,4 +34,9 @@ class CrimeListActivity : SingleFragmentActivity(), CrimeListFragment.Callbacks{
                     .commit()
         }
     }
+
+    override fun onCrimeUpdated(crime: Crime) {
+
+    }
+
 }

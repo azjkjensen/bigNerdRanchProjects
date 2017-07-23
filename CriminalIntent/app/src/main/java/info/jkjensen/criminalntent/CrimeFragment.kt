@@ -1,6 +1,7 @@
 package info.jkjensen.criminalntent
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.support.v4.app.Fragment
@@ -47,8 +48,21 @@ class CrimeFragment : Fragment() {
             return fragment
         }
     }
-
+    private var callbacks:Callbacks? = null
     private var photoFile: File? = null
+
+    /**
+     * Required interface for hosting activities
+     */
+    interface Callbacks {
+        fun onCrimeUpdated(crime: Crime)
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        callbacks = context as Callbacks
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
@@ -214,6 +228,11 @@ class CrimeFragment : Fragment() {
                 updatePhotoView()
             }
         }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callbacks = null
     }
 
     private fun updateDate() {
