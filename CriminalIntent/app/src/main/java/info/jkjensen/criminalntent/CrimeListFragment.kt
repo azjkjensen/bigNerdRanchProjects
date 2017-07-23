@@ -1,5 +1,6 @@
 package info.jkjensen.criminalntent
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -21,9 +22,22 @@ class CrimeListFragment: Fragment() {
     var adapter: CrimeAdapter? = null
     var selectedItem: Int? = null
     var subtitleVisible = false
+    private var callbacks:Callbacks? = null
 
     companion object {
         private val SAVED_SUBTITLE_VISIBLE = "subtitle"
+    }
+
+    /**
+     * Required interface for hosting activities
+     */
+    interface Callbacks {
+        fun onCrimeSelected(crime: Crime)
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        callbacks = context as Callbacks
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +83,8 @@ class CrimeListFragment: Fragment() {
             R.id.new_crime -> {
                 val crime = Crime()
                 CrimeLab.get(activity)?.addCrime(crime)
-                startActivity<CrimePagerActivity>(CrimePagerActivity.EXTRA_CRIME_ID to crime.id)
+                updateUI()
+                callbacks!!.onCrimeSelected(crime)
                 return true
             }
             R.id.show_subtitle ->{
@@ -85,6 +100,11 @@ class CrimeListFragment: Fragment() {
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         outState!!.putBoolean(SAVED_SUBTITLE_VISIBLE, subtitleVisible)
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callbacks = null
     }
 
     private fun updateUI(){
@@ -156,8 +176,10 @@ class CrimeListFragment: Fragment() {
 
         override fun onClick(v: View?) {
 //            toast(crime?.title + " clicked!")
-            selectedItem = adapterPosition
-            startActivity<CrimePagerActivity>(CrimePagerActivity.EXTRA_CRIME_ID to (crime?.id ?: 0))
+//            selectedItem = adapterPosition
+//            startActivity<CrimePagerActivity>(CrimePagerActivity.EXTRA_CRIME_ID to (crime?.id ?: 0))
+
+            callbacks!!.onCrimeSelected(crime!!)
         }
 
 

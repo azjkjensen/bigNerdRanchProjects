@@ -55,7 +55,6 @@ class CrimeFragment : Fragment() {
         val crimeID = arguments.getSerializable(ARG_CRIME_ID) as UUID
         crime = CrimeLab.get(this.activity)?.getCrimeByID(crimeID)
         setHasOptionsMenu(true)
-        photoFile = CrimeLab.get(this.activity)?.getPhotoFile(crime)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -68,6 +67,7 @@ class CrimeFragment : Fragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        photoFile = CrimeLab.get(this.activity)?.getPhotoFile(crime)
 
         crimeTitleEditText.setText(crime?.title)
         crimeSolvedCheckbox.isChecked = crime?.solved ?: false
@@ -253,6 +253,7 @@ class CrimeFragment : Fragment() {
             crimePhoto.setImageDrawable(null)
         } else{
             val bm:Bitmap? = getScaledBitmap(photoFile!!.path, activity)
+            crimePhoto.invalidate()
             crimePhoto.setImageBitmap(bm)
         }
     }
