@@ -253,8 +253,8 @@ class CrimeFragment : Fragment() {
             crimePhoto.setImageDrawable(null)
         } else{
             val bm:Bitmap? = getScaledBitmap(photoFile!!.path, activity)
-            crimePhoto.invalidate()
             crimePhoto.setImageBitmap(bm)
+//            crimePhoto.invalidate()
         }
     }
 }
