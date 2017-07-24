@@ -36,7 +36,16 @@ class CrimeListActivity : SingleFragmentActivity(), CrimeListFragment.Callbacks,
     }
 
     override fun onCrimeUpdated(crime: Crime) {
+        (supportFragmentManager.findFragmentById(R.id.fragmentContainer) as CrimeListFragment).updateUI()
+    }
 
+    override fun onCrimeSwiped(crime: Crime) {
+        CrimeLab.get(this)?.removeCrimeById(crime?.id)
+        val cf = (supportFragmentManager.findFragmentById(R.id.detailFragmentContainer) as CrimeFragment)
+        if(cf.crime!!.title.equals(crime.title)) {
+            getSupportFragmentManager().beginTransaction().remove(cf).commit()
+        }
+        (supportFragmentManager.findFragmentById(R.id.fragmentContainer) as CrimeListFragment).updateUI()
     }
 
 }

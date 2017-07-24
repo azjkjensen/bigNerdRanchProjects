@@ -11,7 +11,7 @@ import java.util.*
 /**
  * Created by jk on 7/12/17.
  */
-class CrimePagerActivity: AppCompatActivity() {
+class CrimePagerActivity: AppCompatActivity(), CrimeFragment.Callbacks {
 
     companion object {
         val EXTRA_CRIME_ID: String = "criminalintent_crime_id"
@@ -52,4 +52,5 @@ class CrimePagerActivity: AppCompatActivity() {
 
     }
 
+    override fun onCrimeUpdated(crime: Crime) {}
 }

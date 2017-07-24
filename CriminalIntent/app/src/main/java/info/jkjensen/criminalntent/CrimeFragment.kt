@@ -89,16 +89,15 @@ class CrimeFragment : Fragment() {
 
         crimeSolvedCheckbox.setOnCheckedChangeListener{ _, isChecked ->
             crime?.solved = isChecked
-            CrimeLab.get(activity.baseContext)?.updateCrime(crime!!)
+            updateCrime()
         }
 
         crimeTitleEditText.addTextChangedListener(object: TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                Log.i("CrimeFragment", "Text changed!")
                 crime!!.title = s.toString()
-                CrimeLab.get(activity.baseContext)?.updateCrime(crime!!)
+                updateCrime()
             }
 
             override fun afterTextChanged(s: Editable?) {}
@@ -194,7 +193,7 @@ class CrimeFragment : Fragment() {
         when(requestCode) {
             REQUEST_DATE -> {
                 crime!!.date = data?.getSerializableExtra(DatePickerFragment.EXTRA_DATE) as Date
-                CrimeLab.get(activity.baseContext)?.updateCrime(crime!!)
+                updateCrime()
                 updateDate()
             }
             REQUEST_CONTACT -> {
@@ -216,7 +215,7 @@ class CrimeFragment : Fragment() {
                         val suspect:String = c.getString(0)
                         crime?.suspect = suspect
                         crimeSuspectButton.text = suspect
-                        CrimeLab.get(activity.baseContext)?.updateCrime(crime!!)
+                        updateCrime()
                     } finally {
                         c.close()
                     }
@@ -237,6 +236,11 @@ class CrimeFragment : Fragment() {
 
     private fun updateDate() {
         crimeDateButton.text = SimpleDateFormat("dd MMM").format(crime?.date)
+    }
+
+    private fun updateCrime() {
+        CrimeLab.get(activity)?.updateCrime(crime!!)
+        callbacks?.onCrimeUpdated(crime!!)
     }
 
     private fun deleteCrime(){

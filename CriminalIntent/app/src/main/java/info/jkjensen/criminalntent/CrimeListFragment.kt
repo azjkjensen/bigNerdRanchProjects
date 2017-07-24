@@ -11,7 +11,8 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.fragment_crime_list.*
 import org.jetbrains.anko.support.v4.startActivity
 import android.support.v7.app.AppCompatActivity
-
+import android.support.v7.widget.helper.ItemTouchHelper
+import android.util.Log
 
 
 /**
@@ -33,6 +34,7 @@ class CrimeListFragment: Fragment() {
      */
     interface Callbacks {
         fun onCrimeSelected(crime: Crime)
+        fun onCrimeSwiped(crime: Crime)
     }
 
     override fun onAttach(context: Context?) {
@@ -60,6 +62,18 @@ class CrimeListFragment: Fragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         updateUI()
+
+
+        val itemTouchCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?, target: RecyclerView.ViewHolder?) = false
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                Log.e("CLF", "Did it!")
+                callbacks!!.onCrimeSwiped((viewHolder as CrimeHolder).crime!!)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(itemTouchCallback)
+        itemTouchHelper.attachToRecyclerView(crimeRecyclerView)
     }
 
     override fun onResume() {
@@ -107,7 +121,7 @@ class CrimeListFragment: Fragment() {
         callbacks = null
     }
 
-    private fun updateUI(){
+    fun updateUI(){
         val crimeLab: CrimeLab? = CrimeLab.get(activity)
         val crimes = crimeLab?.getCrimes()
 
