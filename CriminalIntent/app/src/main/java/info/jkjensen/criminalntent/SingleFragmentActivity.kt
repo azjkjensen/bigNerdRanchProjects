@@ -5,7 +5,6 @@ import android.support.annotation.LayoutRes
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_fragment.*
 
 abstract class SingleFragmentActivity : AppCompatActivity() {
     protected abstract fun createFragment(): Fragment
