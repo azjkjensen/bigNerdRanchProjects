@@ -29,6 +29,7 @@ class BeatBoxFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val b = BeatBox(activity)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
